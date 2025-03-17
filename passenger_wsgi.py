@@ -1,13 +1,13 @@
 import os
 import sys
 
-
+# Add the current directory to the path
 sys.path.insert(0, os.path.dirname(__file__))
 
+# Import the Flask app
+from run import app as application
 
-def application(environ, start_response):
-    start_response('200 OK', [('Content-Type', 'text/plain')])
-    message = 'It works!\n'
-    version = 'Python %s\n' % sys.version.split()[0]
-    response = '\n'.join([message, version])
-    return [response.encode()]
+# Uncomment if using virtualenv with Passenger
+# INTERP = os.path.join(os.environ['HOME'], 'path/to/venv/bin/python')
+# if sys.executable != INTERP:
+#     os.execl(INTERP, INTERP, *sys.argv) 
