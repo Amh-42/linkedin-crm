@@ -1,0 +1,43 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0a66c2" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#0a66c2" stop-opacity="0.05"/>
+        </linearGradient>
+    </defs>
+    <rect width="600" height="400" fill="url(#gradient)" rx="10" ry="10"/>
+    <g transform="translate(300, 180)">
+        <rect x="-150" y="-80" width="300" height="160" fill="white" rx="5" ry="5" stroke="#ddd" stroke-width="1"/>
+        <rect x="-130" y="-60" width="260" height="20" fill="#f0f0f0" rx="3" ry="3"/>
+        <rect x="-130" y="-30" width="180" height="10" fill="#e0e0e0" rx="2" ry="2"/>
+        <rect x="-130" y="-10" width="220" height="10" fill="#e0e0e0" rx="2" ry="2"/>
+        <rect x="-130" y="10" width="200" height="10" fill="#e0e0e0" rx="2" ry="2"/>
+        <rect x="-130" y="40" width="80" height="25" fill="#0a66c2" rx="3" ry="3"/>
+        <rect x="-40" y="40" width="80" height="25" fill="#f0f0f0" rx="3" ry="3" stroke="#ddd" stroke-width="1"/>
+    </g>
+    <g transform="translate(120, 100)">
+        <circle cx="0" cy="0" r="50" fill="white" stroke="#ddd" stroke-width="1"/>
+        <circle cx="0" cy="-15" r="15" fill="#e0e0e0"/>
+        <path d="M-20,10 Q0,40 20,10" stroke="#e0e0e0" stroke-width="8" fill="none"/>
+    </g>
+    <g transform="translate(480, 120)">
+        <circle cx="0" cy="0" r="40" fill="white" stroke="#ddd" stroke-width="1"/>
+        <circle cx="0" cy="-12" r="12" fill="#e0e0e0"/>
+        <path d="M-16,8 Q0,32 16,8" stroke="#e0e0e0" stroke-width="6" fill="none"/>
+    </g>
+    <g transform="translate(400, 300)">
+        <circle cx="0" cy="0" r="30" fill="white" stroke="#ddd" stroke-width="1"/>
+        <circle cx="0" cy="-9" r="9" fill="#e0e0e0"/>
+        <path d="M-12,6 Q0,24 12,6" stroke="#e0e0e0" stroke-width="5" fill="none"/>
+    </g>
+    <!-- LinkedIn icon -->
+    <g transform="translate(180, 320)">
+        <rect width="40" height="40" fill="#0a66c2" rx="5" ry="5"/>
+        <text x="20" y="28" font-family="Arial" font-size="24" font-weight="bold" fill="white" text-anchor="middle">in</text>
+    </g>
+    <!-- Connection lines -->
+    <path d="M120,140 L180,320" stroke="#ddd" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+    <path d="M300,180 L400,300" stroke="#ddd" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+    <path d="M300,180 L480,120" stroke="#ddd" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+    <path d="M180,320 L400,300" stroke="#ddd" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+</svg> 

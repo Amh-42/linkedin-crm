@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}{{ contact.first_name }} {{ contact.last_name }} - LinkedIn CRM{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a href="{{ url_for('contacts.index') }}" class="btn btn-sm btn-outline-secondary mb-2">
+            <i class="fas fa-arrow-left me-1"></i> Back to Contacts
+        </a>
+        <h1 class="mb-0">{{ contact.first_name }} {{ contact.last_name }}</h1>
+        {% if contact.company or contact.position %}
+        <p class="text-muted">
+            {% if contact.position %}{{ contact.position }}{% endif %}
+            {% if contact.position and contact.company %} at {% endif %}
+            {% if contact.company %}{{ contact.company }}{% endif %}
+        </p>
+        {% endif %}
+    </div>
+    <div>
+        <a href="{{ url_for('contacts.edit', id=contact.id) }}" class="btn btn-outline-primary me-2">
+            <i class="fas fa-edit me-1"></i> Edit
+        </a>
+        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            <i class="fas fa-trash me-1"></i> Delete
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Contact Details</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% if contact.email %}
+                    <li class="list-group-item d-flex">
+                        <i class="fas fa-envelope text-primary me-3 mt-1"></i>
+                        <div>
+                            <div class="text-muted small">Email</div>
+                            <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {% if contact.phone %}
+                    <li class="list-group-item d-flex">
+                        <i class="fas fa-phone text-primary me-3 mt-1"></i>
+                        <div>
+                            <div class="text-muted small">Phone</div>
+                            <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {% if contact.linkedin_url %}
+                    <li class="list-group-item d-flex">
+                        <i class="fab fa-linkedin text-primary me-3 mt-1"></i>
+                        <div>
+                            <div class="text-muted small">LinkedIn Profile</div>
+                            <a href="{{ contact.linkedin_url }}" target="_blank">View Profile</a>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {% if tags %}
+                    <li class="list-group-item">
+                        <div class="text-muted small mb-2">Tags</div>
+                        <div>
+                            {% for tag in tags %}
+                            <a href="{{ url_for('contacts.index', tag=tag.name) }}"
+                                class="badge bg-primary text-white text-decoration-none me-1">
+                                {{ tag.name }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    <li class="list-group-item">
+                        <div class="text-muted small">Added on</div>
+                        <div>{{ contact.created_at.strftime('%B %d, %Y') }}</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        {% if contact.notes %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Notes</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">{{ contact.notes|nl2br }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Interactions</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('contacts.add_interaction', id=contact.id) }}" class="mb-4">
+                    {{ interaction_form.hidden_tag() }}
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            {{ interaction_form.interaction_type.label(class="form-label") }}
+                            {{ interaction_form.interaction_type(class="form-select") }}
+                        </div>
+                        <div class="col-md-9">
+                            {{ interaction_form.notes.label(class="form-label") }}
+                            {{ interaction_form.notes(class="form-control", rows=2) }}
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary float-end">
+                                <i class="fas fa-plus me-1"></i> Add Interaction
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <hr>
+
+                {% if interactions %}
+                <div class="timeline">
+                    {% for interaction in interactions %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker 
+                            {% if interaction.interaction_type == 'email' %}bg-primary{% 
+                            elif interaction.interaction_type == 'call' %}bg-success{% 
+                            elif interaction.interaction_type == 'meeting' %}bg-warning{% 
+                            else %}bg-info{% endif %}">
+                            {% if interaction.interaction_type == 'email' %}
+                            <i class="fas fa-envelope"></i>
+                            {% elif interaction.interaction_type == 'call' %}
+                            <i class="fas fa-phone"></i>
+                            {% elif interaction.interaction_type == 'meeting' %}
+                            <i class="fas fa-handshake"></i>
+                            {% else %}
+                            <i class="fas fa-sticky-note"></i>
+                            {% endif %}
+                        </div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between">
+                                <h6>{{ interaction.interaction_type|title }}</h6>
+                                <small class="text-muted">{{ interaction.date.strftime('%B %d, %Y at %H:%M') }}</small>
+                            </div>
+                            <p class="mb-0">{{ interaction.notes|nl2br }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                    <p>No interactions recorded yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete {{ contact.first_name }} {{ contact.last_name }}?
+                This will also delete all associated interactions and tags. This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('contacts.delete', id=contact.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 3rem;
+    }
+
+    .timeline:before {
+        content: '';
+        position: absolute;
+        left: 0.75rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #e9ecef;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: -2.25rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 0.75rem;
+    }
+
+    .timeline-content {
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        padding: 1rem;
+    }
+</style>
+{% endblock %}

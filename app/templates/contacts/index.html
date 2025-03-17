@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Contacts - LinkedIn CRM{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Contacts</h1>
+    <a href="{{ url_for('contacts.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i> Add Contact
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search contacts..." name="q"
+                        value="{{ query }}">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    {% if query %}
+                    <a href="{{ url_for('contacts.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" name="tag" onchange="this.form.submit()">
+                    <option value="">All tags</option>
+                    {% for tag in tags %}
+                    <option value="{{ tag.name }}" {% if tag_filter==tag.name %}selected{% endif %}>{{ tag.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if contacts %}
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Company</th>
+                        <th>Position</th>
+                        <th>Email</th>
+                        <th>Tags</th>
+                        <th>Added</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contact in contacts %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('contacts.view', id=contact.id) }}"
+                                class="text-decoration-none fw-bold text-dark">
+                                {{ contact.first_name }} {{ contact.last_name }}
+                            </a>
+                        </td>
+                        <td>{{ contact.company }}</td>
+                        <td>{{ contact.position }}</td>
+                        <td>{{ contact.email }}</td>
+                        <td>
+                            {% for tag_rel in contact.tags %}
+                            <span class="badge bg-primary">{{ tag_rel.tag.name }}</span>
+                            {% endfor %}
+                        </td>
+                        <td>{{ contact.created_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <div class="d-flex">
+                                <a href="{{ url_for('contacts.view', id=contact.id) }}"
+                                    class="btn btn-sm btn-outline-primary me-1" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ url_for('contacts.edit', id=contact.id) }}"
+                                    class="btn btn-sm btn-outline-secondary me-1" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" title="Delete"
+                                    data-bs-toggle="modal" data-bs-target="#deleteModal{{ contact.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+
+                                <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" id="deleteModal{{ contact.id }}" tabindex="-1"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete {{ contact.first_name }} {{
+                                                contact.last_name }}?
+                                                This action cannot be undone.
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cancel</button>
+                                                <form action="{{ url_for('contacts.delete', id=contact.id) }}"
+                                                    method="post">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if pagination.pages > 1 %}
+    <div class="card-footer">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+                {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="{{ url_for('contacts.index', page=pagination.prev_num, q=query, tag=tag_filter) }}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                </li>
+                {% endif %}
+
+                {% for p in pagination.iter_pages() %}
+                {% if p %}
+                {% if p == pagination.page %}
+                <li class="page-item active">
+                    <span class="page-link">{{ p }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('contacts.index', page=p, q=query, tag=tag_filter) }}">{{ p
+                        }}</a>
+                </li>
+                {% endif %}
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">…</span>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="{{ url_for('contacts.index', page=pagination.next_num, q=query, tag=tag_filter) }}">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+        <h3>No contacts found</h3>
+        <p class="mb-4">{% if query or tag_filter %}No contacts match your search criteria{% else %}You haven't added
+            any contacts yet{% endif %}</p>
+        {% if query or tag_filter %}
+        <a href="{{ url_for('contacts.index') }}" class="btn btn-outline-primary me-2">
+            <i class="fas fa-times me-1"></i> Clear filters
+        </a>
+        {% endif %}
+        <a href="{{ url_for('contacts.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Add your first contact
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
