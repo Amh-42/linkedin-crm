@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     resolve(result.crmUrl);
                 } else {
                     // Set default URL to match your Flask server
-                    const defaultUrl = 'http://localhost:5001';
+                    const defaultUrl = 'https://api.inlinkai.com';
                     // Save this URL for future use
                     chrome.storage.sync.set({ 'crmUrl': defaultUrl });
                     resolve(defaultUrl);

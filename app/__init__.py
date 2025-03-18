@@ -17,6 +17,8 @@ def load_user(user_id):
 
 def create_app(config_name='default'):
     app = Flask(__name__)
+    # Add this line after creating the app
+    CORS(app)
     app.config.from_object(config[config_name])
     
     # Initialize extensions
