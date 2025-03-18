@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Resend Verification Email - LinkedIn CRM{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Resend Verification Email</h3>
+            </div>
+            <div class="card-body">
+                <p>Please enter your email address to receive a new verification email.</p>
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Send Verification Email</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p>Remember your password? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

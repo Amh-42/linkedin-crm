@@ -2,6 +2,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from flask import current_app
 
 db = SQLAlchemy()
 
@@ -15,11 +17,34 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     contacts = db.relationship('Contact', backref='owner', lazy='dynamic')
     
+    # Email verification fields
+    is_verified = db.Column(db.Boolean, default=False)
+    verification_sent_at = db.Column(db.DateTime, nullable=True)
+    
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
         
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def generate_verification_token(self):
+        """Generate email verification token"""
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        return serializer.dumps(self.email, salt='email-verification')
+    
+    @staticmethod
+    def verify_token(token, expiration=3600):
+        """Verify the email token"""
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        try:
+            email = serializer.loads(
+                token,
+                salt='email-verification',
+                max_age=expiration
+            )
+            return email
+        except SignatureExpired:
+            return None
     
     def __repr__(self):
         return f'<User {self.username}>'

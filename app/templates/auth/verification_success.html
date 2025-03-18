@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Email Verified - LinkedIn CRM{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card text-center">
+            <div class="card-header">
+                <h3 class="card-title">Email Verified</h3>
+            </div>
+            <div class="card-body">
+                <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+                <h2>Thank You!</h2>
+                <p class="lead">Your email has been successfully verified.</p>
+                <p>You can now log in to your LinkedIn CRM account and start managing your contacts.</p>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg mt-3">
+                    <i class="fas fa-sign-in-alt me-2"></i> Log In
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
